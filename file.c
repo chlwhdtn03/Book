@@ -27,7 +27,7 @@ int main(void) {
 
 
 #include <stdio.h>
-
+#include <stdlib.h>
 #include <string.h>
 int check_exists();
 int add();
@@ -88,18 +88,18 @@ int check_exists() {
 	fclose(read);
 	return 1;
 }
-
 int del() {
+
 	char remove[20];
 	printf("삭제할 이름을 입력하세요. : ");
 	scanf("%s", remove);
 	for (int i = 0; i < index; i++) {
-		if (!strcmp(remove, list[i].name)) {
+		if (strcmp(remove, list[i].name) == 0 ) {
+			printf("찾음");
 			for (int j = i; j < index; j++) {
 				list[j] = list[j + 1];
 			}
 			index--;
-			break;
 		}
 	}
 	save();
@@ -109,7 +109,7 @@ int del() {
 int save() {
 	FILE *write = fopen("address.txt", "w");
 	for (int i = 0; i < index; i++) {
-		fprintf(write, "%s%s%s", list[i].name, list[i].company, list[i].family);
+		fprintf(write, "%s %s %s\n", list[i].name, list[i].company, list[i].family);
 	}
 	fclose(write);
 }
@@ -122,29 +122,26 @@ int add() {
 	scanf("%s", list[index].company);
 	printf("가족을 입력하세요 : ");
 	scanf("%s", list[index].family);
-	fprintf(write, "%s\n%s\n%s\n", list[index].name, list[index].company, list[index].family);
+	fprintf(write, "%s %s %s\n", list[index].name, list[index].company, list[index].family);
 	fclose(write);
 	index++;
 	loadList();
 }
 
 int loadList() {
-	char buffer[20];
 	index = 0; 
 	FILE *read = fopen("address.txt", "r");
 	if (read == NULL)
 		return 0;
 	do {
-		fgets(list[index].name, sizeof(buffer), read);
-		fgets(list[index].company, sizeof(buffer), read);
-		fgets(list[index].family, sizeof(buffer), read);
+		fscanf(read, "%s %s %s\n", list[index].name, list[index].company, list[index].family);
+
 		index++;
 	} while (!feof(read));
-	index--;
 	fclose(read);
 }
 int printList() {
 	for (int i = 0; i < index; i++) {
-		printf("이름 : %s회사 : %s가족 : %s\n", list[i].name, list[i].company, list[i].family);
+		printf("이름 : %s\t회사 : %s\t가족 : %s\t\n", list[i].name, list[i].company, list[i].family);
 	}
 }
